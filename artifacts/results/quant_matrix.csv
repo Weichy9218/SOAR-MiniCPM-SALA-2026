@@ -1,0 +1,4 @@
+config_name,target_precision,quantization,kv_cache_dtype,accuracy_ori,accuracy_overall,s1_duration,s8_duration,smax_duration,gpu_memory_peak,notes
+fp16_baseline,FP16,none,default,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,pending baseline runtime
+gptq_marlin_candidate,W4A16,gptq_marlin,auto,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,pending quantized model and accuracy eval
+gptq_marlin_fp8kv_candidate,W4A16,gptq_marlin,fp8_e5m2,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,pending quantized model and accuracy eval

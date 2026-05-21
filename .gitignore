@@ -1,0 +1,35 @@
+# Local third-party checkouts. Keep revision notes in README instead of vendoring full repos.
+/repos/
+
+# Runtime logs and large derived artifacts.
+/artifacts/logs/
+/artifacts/checkpoints/
+/artifacts/draft_heads/
+*.log
+*.jsonl.tmp
+
+# Model weights and generated quantized checkpoints must not enter git.
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.tar
+*.tar.gz
+*.zip
+
+# Python and editor noise.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# Local env/secrets.
+.env
+.venv/
+venv/
+
