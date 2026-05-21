@@ -8,6 +8,8 @@
 /home/dataset-local/work/SOAR
 ```
 
+项目级 agent 工作偏好记录在 `AGENTS.md`。后续让 Codex 继续开发时，先读取这个文件，它记录了本服务器的路径、uv cache、模型目录、CUDA/GPU、git 和验证纪律。
+
 环境和模型目录也固定到 `/home/dataset-local`，避免污染系统盘或散落到 `/home/dataset-local/work`：
 
 ```bash
