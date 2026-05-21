@@ -3,7 +3,8 @@ set -euo pipefail
 
 # Start the official SOAR MiniCPM-SALA baseline server.
 
-MODEL_PATH="${MODEL_PATH:-/models/MiniCPM-SALA}"
+MODEL_ROOT="${MODEL_ROOT:-/home/dataset-local/models}"
+MODEL_PATH="${MODEL_PATH:-${MODEL_ROOT}/MiniCPM-SALA}"
 HOST="${HOST:-0.0.0.0}"
 PORT="${PORT:-30000}"
 LOG_DIR="${LOG_DIR:-/home/dataset-local/work/SOAR/artifacts/logs}"

@@ -4,7 +4,11 @@
 
 - Work root: `/home/dataset-local/work/SOAR`
 - Environment log: `/home/dataset-local/work/SOAR/artifacts/logs/env_info.log`
-- Current blocker: `/models/MiniCPM-SALA` is not present on this container.
+- Current blocker: `/home/dataset-local/models/MiniCPM-SALA` is not present on this container.
+- Model root: `/home/dataset-local/models`
+- uv cache: `/home/dataset-local/.cache/uv`
+- Hugging Face mirror: `HF_ENDPOINT=https://hf-mirror.com`
+- Local CUDA toolkit: `/home/dataset-local/cuda-13.1`
 - The upstream Hugging Face repository is about 19GB, larger than the current free space on `/home/dataset-local`.
 - Current Python: `Python 3.12.4`
 - Current CUDA driver runtime from `nvidia-smi`: CUDA 13.0, A100-SXM4-80GB.
@@ -43,7 +47,7 @@ Target official SGLang server arguments:
 
 ```bash
 python -m sglang.launch_server \
-  --model-path /models/MiniCPM-SALA \
+  --model-path /home/dataset-local/models/MiniCPM-SALA \
   --disable-radix-cache \
   --attention-backend minicpm_flashinfer \
   --chunked-prefill-size 8192 \
@@ -62,18 +66,28 @@ Readiness log:
 
 Required before baseline smoke:
 
-1. Install SGLang/SOAR runtime dependencies.
-2. Ensure `/models/MiniCPM-SALA` exists or prepare a valid symlink to the official model.
-3. Start server with the command above.
-4. Run `eval_model.py --num_samples 10` smoke test.
-5. Run small serving benchmark smoke test.
+1. Reuse `/home/dataset-local/.cache/uv` and run the local micro goal.
+2. Ensure `/home/dataset-local/models/MiniCPM-SALA` exists or prepare a valid symlink to the official model.
+3. Install SGLang/SOAR runtime dependencies.
+4. Start server with the command above.
+5. Run `eval_model.py --num_samples 10` smoke test.
+6. Run small serving benchmark smoke test.
 
 ## Benchmark Commands
 
 Smoke:
 
 ```bash
+export UV_CACHE_DIR=/home/dataset-local/.cache/uv
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HOME=/home/dataset-local/.cache/huggingface
+export MODEL_ROOT=/home/dataset-local/models
+export MODEL_PATH=/home/dataset-local/models/MiniCPM-SALA
+export LOCAL_CUDA_HOME=/home/dataset-local/cuda-13.1
+bash /home/dataset-local/work/SOAR/scripts/setup_micro_env.sh
+source /home/dataset-local/work/SOAR/.venv/bin/activate
 bash /home/dataset-local/work/SOAR/scripts/check_soar_readiness.sh
+bash /home/dataset-local/work/SOAR/scripts/run_micro_goal.sh
 bash /home/dataset-local/work/SOAR/scripts/launch_baseline.sh
 bash /home/dataset-local/work/SOAR/scripts/run_baseline_smoke.sh
 ```
@@ -131,6 +145,6 @@ SpecForge PR #492 was fetched as local branch `pr-492-lk-loss`. It contains `spe
 
 - Full baseline correctness and speed benchmark: skipped until model and dependencies are available.
 - Local model download was not attempted because `/home/dataset-local` only has about 12GB free while the official model repository is about 19GB.
-- ModelScope is reachable from this container; Hugging Face direct access timed out. A local helper exists at `/home/dataset-local/work/SOAR/scripts/prepare_local_model.sh` and defaults to `/models/MiniCPM-SALA` on the system disk.
+- Hugging Face direct access timed out earlier; local download now defaults to `HF_ENDPOINT=https://hf-mirror.com`, with ModelScope as a fallback. A local helper exists at `/home/dataset-local/work/SOAR/scripts/prepare_local_model.sh` and defaults to `/home/dataset-local/models/MiniCPM-SALA`.
 - EAGLE3 / LK work: intentionally not started before baseline smoke.
 - Multi-branch tree, Medusa, Lightning Attention parent-state propagation: out of scope for the first runnable submission path.

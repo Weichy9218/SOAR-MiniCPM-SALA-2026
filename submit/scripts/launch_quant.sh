@@ -3,7 +3,8 @@ set -euo pipefail
 
 # Start MiniCPM-SALA with an existing GPTQ/GPTQ-Marlin quantized checkpoint.
 
-MODEL_PATH="${MODEL_PATH:-/models/MiniCPM-SALA-GPTQ}"
+MODEL_ROOT="${MODEL_ROOT:-/home/dataset-local/models}"
+MODEL_PATH="${MODEL_PATH:-${MODEL_ROOT}/MiniCPM-SALA-GPTQ}"
 HOST="${HOST:-0.0.0.0}"
 PORT="${PORT:-30000}"
 QUANTIZATION="${QUANTIZATION:-gptq_marlin}"

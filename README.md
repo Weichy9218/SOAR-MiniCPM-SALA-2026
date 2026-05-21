@@ -8,6 +8,34 @@
 /home/dataset-local/work/SOAR
 ```
 
+环境和模型目录也固定到 `/home/dataset-local`，避免污染系统盘或散落到 `/home/dataset-local/work`：
+
+```bash
+export UV_CACHE_DIR=/home/dataset-local/.cache/uv
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HOME=/home/dataset-local/.cache/huggingface
+export MODEL_ROOT=/home/dataset-local/models
+export MODEL_PATH=/home/dataset-local/models/MiniCPM-SALA
+export LOCAL_CUDA_HOME=/home/dataset-local/cuda-13.1
+```
+
+当前执行策略是先做本地显卡 **micro goal**：验证 `torch + CUDA + tokenizer/model config` 这条最小链路，再启动 SGLang server。这样可以把问题分成两类：环境/GPU 问题和 serving/runtime 问题。
+
+### CUDA 版本判断
+
+SOAR Toolkit 的提交说明没有单独写死 CUDA toolkit 版本，官方要求的核心是通过 `prepare_env.sh` 自定义环境、用 `uv pip install` 安装依赖，并最终能在评测环境中启动 MiniCPM-SALA server。
+
+但当前本地 SGLang 源码已经明确偏向 CUDA 13 栈：
+
+- `cuda-python>=13.0`
+- `flashinfer_python[cu13]==0.6.11.post1`
+- `flashinfer_cubin==0.6.11.post1`
+- `nvidia-cutlass-dsl[cu13]==4.5.1`
+- `torch==2.11.0`
+- `sglang-kernel==0.4.2.post2`
+
+因此，本项目本地优先使用 `/home/dataset-local/cuda-13.1` 作为 `LOCAL_CUDA_HOME`，路径存在时再导出为 `CUDA_HOME`。`nvidia-smi` 显示驱动 runtime CUDA 13.0，`/home/dataset-local/cuda-13.1/bin/nvcc` 可用；这对 Python wheel 运行通常不是问题，编译自定义 kernel 时才更敏感。原则上不再走 `torch==2.6.0+cu124`，避免和 SGLang cu13 依赖栈混用。提交脚本不会强制要求评测环境也存在这个本地路径，路径不存在时会沿用平台已有 CUDA。
+
 ## 当前状态
 
 当前代码库已经完成的是 **reproducibility scaffold**，还没有完成真正的 speed benchmark 或 EAGLE3/LK 实验。
@@ -23,11 +51,12 @@
 
 当前阻塞：
 
-- `/models/MiniCPM-SALA` 不存在。
+- `/home/dataset-local/models/MiniCPM-SALA` 不存在。
 - 当前 Python 环境缺少 `torch`、`sglang`、`transformers`、`flashinfer-python`、`sglang-kernel` 等 runtime dependencies。
 - 当前容器没有 Docker/Podman，因此不能直接用官方 SOAR 镜像。
-- `/home/dataset-local` 剩余空间约 12GB，而 MiniCPM-SALA 模型仓库约 19GB，不适合放在本地盘；如果下载，优先放 `/models/MiniCPM-SALA`。
-- Hugging Face 直连超时；ModelScope 页面可达。
+- `/home/dataset-local` 剩余空间约 12GB，而 MiniCPM-SALA 模型仓库约 19GB；模型目录已固定为 `/home/dataset-local/models/MiniCPM-SALA`，但完整下载前需要先清理或扩展空间。
+- Hugging Face 下载默认使用 mirror：`HF_ENDPOINT=https://hf-mirror.com`；ModelScope 保留为 fallback。
+- 本地 CUDA toolkit 优先使用 `/home/dataset-local/cuda-13.1`，对齐当前 SGLang 的 cu13 依赖。
 
 因此，当前阶段严格停止在 baseline smoke 前，未进入 speculative decoding 或 LK loss 训练。
 
@@ -71,7 +100,7 @@ SOAR/
 
 ```bash
 python -m sglang.launch_server \
-  --model-path /models/MiniCPM-SALA \
+  --model-path /home/dataset-local/models/MiniCPM-SALA \
   --disable-radix-cache \
   --attention-backend minicpm_flashinfer \
   --chunked-prefill-size 8192 \
@@ -87,7 +116,8 @@ python -m sglang.launch_server \
 
 - 检查项目根目录。
 - 检查 `SOAR-Toolkit`、`SGLang`、`SpecForge` 是否存在。
-- 检查 `/models/MiniCPM-SALA` 是否存在。
+- 检查 `/home/dataset-local/models/MiniCPM-SALA` 是否存在。
+- 打印 `UV_CACHE_DIR`、`HF_ENDPOINT`、`HF_HOME`、`MODEL_ROOT`。
 - 打印 Python 版本。
 - 检查关键 Python package 是否安装。
 - 打印 GPU 型号和显存。
@@ -127,17 +157,27 @@ sglang-kernel=missing
 `scripts/prepare_local_model.sh` 是本地 helper，不是最终提交逻辑。它用于把 MiniCPM-SALA 准备到：
 
 ```bash
-/models/MiniCPM-SALA
+/home/dataset-local/models/MiniCPM-SALA
 ```
 
-默认优先走 ModelScope：
+默认优先走 Hugging Face mirror：
 
 ```bash
-SOURCE=modelscope MODEL_DIR=/models/MiniCPM-SALA \
+SOURCE=huggingface \
+HF_ENDPOINT=https://hf-mirror.com \
+MODEL_DIR=/home/dataset-local/models/MiniCPM-SALA \
 bash scripts/prepare_local_model.sh
 ```
 
-这个脚本没有被自动执行，因为模型约 19GB，而本地盘空间不足；是否下载需要根据系统盘空间和网络状态决定。
+如果 Hugging Face mirror 不稳定，可以切换到 ModelScope：
+
+```bash
+SOURCE=modelscope \
+MODEL_DIR=/home/dataset-local/models/MiniCPM-SALA \
+bash scripts/prepare_local_model.sh
+```
+
+这个脚本没有被自动执行，因为模型约 19GB，而当前 `/home/dataset-local` 空间不足；是否下载需要先看 `df -h /home/dataset-local`。
 
 ### 6. 量化候选路径
 
@@ -182,6 +222,9 @@ submit/
 `prepare_env.sh`：
 
 - 使用 `uv pip install`。
+- 默认复用 `/home/dataset-local/.cache/uv`。
+- 默认导出 `HF_ENDPOINT=https://hf-mirror.com`。
+- 默认模型路径为 `/home/dataset-local/models/MiniCPM-SALA`。
 - 如果提交包内存在 `sglang/python`，会用 editable install 覆盖 SGLang。
 - 在当前开发树中，也能 fallback 到 `repos/sglang/python`。
 - 导出默认 `SGLANG_SERVER_ARGS`。
@@ -251,10 +294,25 @@ cd /home/dataset-local/work/SOAR
 bash scripts/check_soar_readiness.sh
 ```
 
+建立本地 micro env：
+
+```bash
+bash scripts/setup_micro_env.sh
+source .venv/bin/activate
+```
+
+运行本地显卡 micro goal：
+
+```bash
+bash scripts/run_micro_goal.sh
+```
+
 准备模型：
 
 ```bash
-SOURCE=modelscope MODEL_DIR=/models/MiniCPM-SALA \
+SOURCE=huggingface \
+HF_ENDPOINT=https://hf-mirror.com \
+MODEL_DIR=/home/dataset-local/models/MiniCPM-SALA \
 bash scripts/prepare_local_model.sh
 ```
 
@@ -296,13 +354,15 @@ bash scripts/launch_quant.sh
 
 步骤：
 
-1. 安装 runtime dependencies，优先复用官方 SOAR/SGLang 版本。
-2. 把模型准备到 `/models/MiniCPM-SALA`。
-3. 运行 `bash scripts/check_soar_readiness.sh`，确认 `model=present`，关键包不再 missing。
-4. 启动 `bash scripts/launch_baseline.sh`。
-5. 运行 `bash scripts/run_baseline_smoke.sh`。
-6. smoke 通过后运行 full public accuracy 和 S1/S8/Smax。
-7. 更新 `artifacts/results/baseline_summary.md`。
+1. 运行 `bash scripts/setup_micro_env.sh`，优先复用 `/home/dataset-local/.cache/uv`。
+2. `source .venv/bin/activate` 后运行 `bash scripts/run_micro_goal.sh`，确认本地 A100 可被 `torch` 使用。
+3. 清理或扩展 `/home/dataset-local` 空间，把模型准备到 `/home/dataset-local/models/MiniCPM-SALA`。
+4. 运行 `bash scripts/check_soar_readiness.sh`，确认 `model=present`，关键包不再 missing。
+5. 安装完整 SGLang/SOAR runtime dependencies，优先复用官方 SOAR/SGLang 版本。
+6. 启动 `bash scripts/launch_baseline.sh`。
+7. 运行 `bash scripts/run_baseline_smoke.sh`。
+8. smoke 通过后运行 full public accuracy 和 S1/S8/Smax。
+9. 更新 `artifacts/results/baseline_summary.md`。
 
 done when：
 
@@ -440,22 +500,40 @@ done when：
 
 下一步目标：
 1. 解锁官方 FP16 baseline。
-2. 确认 /models/MiniCPM-SALA 是否存在；如果不存在，优先尝试 ModelScope 下载到 /models/MiniCPM-SALA，不要下载到 /home/dataset-local。
-3. 安装或修复 SGLang/SOAR runtime dependencies，优先使用 uv pip。
-4. 启动：
+2. 固定环境变量：
+
+   export UV_CACHE_DIR=/home/dataset-local/.cache/uv
+   export HF_ENDPOINT=https://hf-mirror.com
+   export HF_HOME=/home/dataset-local/.cache/huggingface
+   export MODEL_ROOT=/home/dataset-local/models
+   export MODEL_PATH=/home/dataset-local/models/MiniCPM-SALA
+
+3. 先跑本地显卡 micro goal：
+
+   bash scripts/setup_micro_env.sh
+   source .venv/bin/activate
+   bash scripts/run_micro_goal.sh
+
+4. 确认 /home/dataset-local/models/MiniCPM-SALA 是否存在；如果不存在，先检查 df -h /home/dataset-local，空间足够后优先用 HF mirror 下载：
+
+   SOURCE=huggingface HF_ENDPOINT=https://hf-mirror.com \
+   MODEL_DIR=/home/dataset-local/models/MiniCPM-SALA \
+   bash scripts/prepare_local_model.sh
+
+5. 安装或修复完整 SGLang/SOAR runtime dependencies，优先使用 uv pip，并继续复用 /home/dataset-local/.cache/uv。
+6. 启动：
 
    bash scripts/launch_baseline.sh
 
-5. 跑：
+7. 跑：
 
    bash scripts/run_baseline_smoke.sh
 
-6. smoke 通过后，跑 full public accuracy 和 S1/S8/Smax。
-7. 更新：
+8. smoke 通过后，跑 full public accuracy 和 S1/S8/Smax。
+9. 更新：
    - artifacts/results/baseline_summary.md
    - artifacts/results/quant_matrix.csv
    - submit/README_SOAR.md
 
 如果 baseline 仍失败，请只修 baseline，并基于 logs 给出最小修复；不要进入 speculative。
 ```
-

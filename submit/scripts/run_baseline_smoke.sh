@@ -5,7 +5,8 @@ set -euo pipefail
 
 WORK_ROOT="${WORK_ROOT:-/home/dataset-local/work/SOAR}"
 SOAR_ROOT="${SOAR_ROOT:-${WORK_ROOT}/repos/SOAR-Toolkit}"
-MODEL_PATH="${MODEL_PATH:-/models/MiniCPM-SALA}"
+MODEL_ROOT="${MODEL_ROOT:-/home/dataset-local/models}"
+MODEL_PATH="${MODEL_PATH:-${MODEL_ROOT}/MiniCPM-SALA}"
 API_BASE="${API_BASE:-http://127.0.0.1:30000}"
 RESULT_DIR="${RESULT_DIR:-${WORK_ROOT}/artifacts/results}"
 LOG_DIR="${LOG_DIR:-${WORK_ROOT}/artifacts/logs}"
