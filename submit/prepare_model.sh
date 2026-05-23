@@ -33,7 +33,8 @@ fi
 export UV_CACHE_DIR="${UV_CACHE_DIR:-/home/dataset-local/.cache/uv}"
 export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 export HF_HOME="${HF_HOME:-/home/dataset-local/.cache/huggingface}"
-mkdir -p "${UV_CACHE_DIR}" "${HF_HOME}"
+export TMPDIR="${TMPDIR:-/home/dataset-local/tmp}"
+mkdir -p "${UV_CACHE_DIR}" "${HF_HOME}" "${TMPDIR}"
 
 if [ ! -d "${INPUT}" ]; then
   echo "Input model path does not exist: ${INPUT}" >&2

@@ -1,0 +1,27 @@
+diff --git a/setup.py b/setup.py
+index fc8d758..f2ed266 100644
+--- a/setup.py
++++ b/setup.py
+@@ -2,6 +2,7 @@
+ 
+ import subprocess
+ import re
++import os
+ 
+ from setuptools import setup
+ from torch.utils.cpp_extension import BuildExtension, CUDAExtension
+@@ -26,6 +27,14 @@ if _cuda_ver >= (11, 8):
+ if _cuda_ver >= (12, 8):
+     supported_archs.append("120")
+ 
++arch_override = os.getenv("MINICPM_SALA_CUDA_ARCHS")
++if arch_override:
++    supported_archs = [
++        arch.strip().replace("sm_", "").replace("compute_", "").replace(".", "")
++        for arch in arch_override.replace(";", ",").split(",")
++        if arch.strip()
++    ]
++
+ cc_flag = []
+ for arch in supported_archs:
+     cc_flag.extend(["-gencode", f"arch=compute_{arch},code=sm_{arch}"])

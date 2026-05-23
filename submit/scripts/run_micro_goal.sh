@@ -11,10 +11,11 @@ LOG_DIR="${LOG_DIR:-${WORK_ROOT}/artifacts/logs}"
 UV_CACHE_DIR="${UV_CACHE_DIR:-/home/dataset-local/.cache/uv}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 HF_HOME="${HF_HOME:-/home/dataset-local/.cache/huggingface}"
+TMPDIR="${TMPDIR:-/home/dataset-local/tmp}"
 
-export MODEL_PATH UV_CACHE_DIR HF_ENDPOINT HF_HOME
+export MODEL_PATH UV_CACHE_DIR HF_ENDPOINT HF_HOME TMPDIR
 
-mkdir -p "${LOG_DIR}" "${MODEL_ROOT}" "${UV_CACHE_DIR}" "${HF_HOME}"
+mkdir -p "${LOG_DIR}" "${MODEL_ROOT}" "${UV_CACHE_DIR}" "${HF_HOME}" "${TMPDIR}"
 
 {
   echo "== SOAR local micro goal =="

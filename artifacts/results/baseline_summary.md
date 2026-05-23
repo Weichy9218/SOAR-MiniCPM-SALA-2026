@@ -1,28 +1,28 @@
 # Baseline Summary
 
-Status: **blocked before server start**
+Status: **FP16 baseline smoke passed with CUDA graph disabled**
 
 ## Facts
 
-- Timestamp: 2026-05-21T11:30:50+08:00
+- Timestamp: 2026-05-22T03:36:15+08:00
 - Work root: `/home/dataset-local/work/SOAR`
-- Environment log: `/home/dataset-local/work/SOAR/artifacts/logs/env_info.log`
+- Model path: `/home/dataset-local/models/MiniCPM-SALA`
+- Model files: `config.json` plus 4 safetensors shards, about 18GB total.
 - uv cache: `/home/dataset-local/.cache/uv`
-- model root: `/home/dataset-local/models`
 - Hugging Face mirror: `HF_ENDPOINT=https://hf-mirror.com`
 - Local CUDA toolkit: `/home/dataset-local/cuda-13.1`
-- GPU: NVIDIA A100-SXM4-80GB, 0 MiB used at snapshot time
-- Python: 3.12.4
-- `torch`: not installed
-- `sglang`: not installed
-- `/home/dataset-local/models/MiniCPM-SALA`: not found
-- Upstream model repository size: about 19GB, larger than the current free space on `/home/dataset-local`.
-- SOAR-Toolkit: cloned and available at `/home/dataset-local/work/SOAR/repos/SOAR-Toolkit`
-- SGLang source: cloned and available at `/home/dataset-local/work/SOAR/repos/sglang`
-- SpecForge source: cloned and available at `/home/dataset-local/work/SOAR/repos/SpecForge`
-- Repository revisions: SOAR `2ed4ade`, SGLang `791a2f0`, SpecForge `d5fb617`, SpecForge PR #492 `4385d78`
+- Python: `3.12.4`
+- GPU: NVIDIA A100-SXM4-80GB
+- Runtime: `torch==2.11.0+cu130`, `transformers==5.8.1`, `flashinfer-python==0.6.11.post1`, `sglang-kernel==0.4.2.post2`, `sgl-kernel==0.4.2.post2`, `xgrammar==0.2.1`, `datasets==4.8.5`.
+- Local patched SGLang source: `/home/dataset-local/work/SOAR/repos/soar_demo_sala/sglang/python`
+- The default baseline launch script now adds `--disable-cuda-graph` via `DISABLE_CUDA_GRAPH=1`.
+- Reason for the default: with CUDA graph enabled, the Smax smoke path crashes in `minicpm_flashinfer` CUDA graph replay metadata with `kv_indptr[...] should be non-negative`.
+- `DISABLE_CUDA_GRAPH=0` can reproduce the original CUDA graph path for debugging.
+- Local temp/cache controls are explicit: `TMPDIR=/home/dataset-local/tmp`, `UV_CACHE_DIR=/home/dataset-local/.cache/uv`, `HF_HOME=/home/dataset-local/.cache/huggingface`, `XDG_CACHE_HOME=/home/dataset-local/.cache`, and `HOME=/home/dataset-local` for TVM/JIT cache placement.
 
-## Official Baseline Server Args
+## Baseline Server Args
+
+Required official args are still present:
 
 ```bash
 python -m sglang.launch_server \
@@ -34,60 +34,47 @@ python -m sglang.launch_server \
   --dense-as-sparse
 ```
 
-## Metrics
+Current stable local launch adds:
+
+```bash
+--disable-cuda-graph
+```
+
+## Smoke Metrics
+
+These are **smoke** numbers from the 2-request `artifacts/results/speed_smoke.jsonl`, not full public benchmark results.
 
 | metric | value |
 |---|---:|
-| ori_accuracy | 0.XXX |
-| overall_accuracy | 0.XXX |
-| S1 Benchmark Duration | 0.XXX |
-| S8 Benchmark Duration | 0.XXX |
-| Smax Benchmark Duration | 0.XXX |
-| TTFT | 0.XXX |
-| ITL | 0.XXX |
-| output tokens/s | 0.XXX |
-| GPU memory peak | 0.XXX |
-| OOM | not evaluated |
-| server crash | not evaluated |
+| chat completions smoke | passed |
+| S1 Benchmark Duration | 0.78 s |
+| S8 Benchmark Duration | 1.75 s |
+| Smax Benchmark Duration | 0.97 s |
+| server crash with `--disable-cuda-graph` | no |
+| server crash with CUDA graph enabled | yes, Smax smoke |
 
-## Blockers
+Full public accuracy is running in restartable chunks because `SOAR-Toolkit/eval_model.py` uses `max_out_len=65536` and some samples produce multi-minute long generations. The current completed-chunks-only partial result is 100/150 samples with `ori_accuracy=76.00` and `overall_accuracy=95.00`; do not report it as final 150-sample accuracy.
 
-1. `/home/dataset-local/models/MiniCPM-SALA` does not exist.
-2. Base Python environment lacks `torch`, `sglang`, `transformers`, `flashinfer`, and `sgl-kernel`.
-3. No Docker/Podman runtime is available to use the official SOAR image directly.
-4. Current `/home/dataset-local` free space is about 12GB, below the upstream model size.
-5. Hugging Face direct access timed out earlier; new default is `HF_ENDPOINT=https://hf-mirror.com`, with ModelScope as fallback.
+Completed-chunk summaries:
 
-## CUDA Note
+- JSON: `/home/dataset-local/work/SOAR/artifacts/results/baseline_accuracy_completed_now.json`
+- Markdown: `/home/dataset-local/work/SOAR/artifacts/results/baseline_accuracy_completed_now.md`
+- Checkpoint directory: `/home/dataset-local/work/SOAR/artifacts/results/baseline_accuracy_chunks/`
 
-SOAR Toolkit does not pin a CUDA toolkit version in its submission README. The local SGLang source currently depends on a CUDA 13 stack (`cuda-python>=13.0`, `flashinfer_python[cu13]`, `torch==2.11.0`), so local setup should prefer `/home/dataset-local/cuda-13.1` and avoid mixing with the older `torch==2.6.0+cu124` path.
+## Logs
 
-## Attempted Smoke Test
+- Model download: `/home/dataset-local/work/SOAR/artifacts/logs/prepare_model_hf.log`
+- Runtime installs: `/home/dataset-local/work/SOAR/artifacts/logs/install_xgrammar.log`, `/home/dataset-local/work/SOAR/artifacts/logs/install_datasets.log`
+- Readiness: `/home/dataset-local/work/SOAR/artifacts/logs/check_soar_readiness_after_extensions.log`, `/home/dataset-local/work/SOAR/artifacts/logs/check_soar_readiness_after_torchao.log`
+- Baseline server: `/home/dataset-local/work/SOAR/artifacts/logs/baseline_server.log`
+- Short chat smoke: `/home/dataset-local/work/SOAR/artifacts/logs/baseline_accuracy_smoke.log`
+- Speed smoke: `/home/dataset-local/work/SOAR/artifacts/logs/baseline_speed_smoke.log`
+- Smoke predictions: `/home/dataset-local/work/SOAR/artifacts/results/baseline_smoke_predictions.jsonl`
+- Chunked accuracy log: `/home/dataset-local/work/SOAR/artifacts/logs/baseline_accuracy_chunked.log`
 
-Command:
+## Remaining Baseline Work
 
-```bash
-bash /home/dataset-local/work/SOAR/scripts/run_baseline_smoke.sh
-```
-
-Result:
-
-```text
-Model path not found: /home/dataset-local/models/MiniCPM-SALA
-```
-
-Log:
-
-- `/home/dataset-local/work/SOAR/artifacts/logs/baseline_smoke_blocked.log`
-
-## Next Action
-
-Reuse `/home/dataset-local/.cache/uv`, run the local GPU micro goal, make `/home/dataset-local/models/MiniCPM-SALA` available, then install the full SGLang/SOAR runtime and run the 10-sample accuracy smoke test before any quantization or speculative decoding work.
-
-Local model helper:
-
-```bash
-SOURCE=huggingface HF_ENDPOINT=https://hf-mirror.com \
-MODEL_DIR=/home/dataset-local/models/MiniCPM-SALA \
-bash /home/dataset-local/work/SOAR/scripts/prepare_local_model.sh
-```
+1. Finish the running chunked public accuracy on all 150 samples and record final `ori_accuracy` / `overall_accuracy`.
+2. Obtain or set official speed split paths via `SPEED_DATA_S1`, `SPEED_DATA_S8`, and `SPEED_DATA_SMAX`; only `perf_public_set.jsonl` is present locally.
+3. Investigate the CUDA graph Smax crash separately; keep `--disable-cuda-graph` for correctness-stable baseline until fixed.
+4. Do not start EAGLE3, LK loss, or quantization experiments before full FP16 baseline accuracy is recorded.

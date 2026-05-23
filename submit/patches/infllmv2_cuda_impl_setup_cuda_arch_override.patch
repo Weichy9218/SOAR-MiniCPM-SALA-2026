@@ -1,0 +1,19 @@
+diff --git a/setup.py b/setup.py
+index e66d970..87b0500 100644
+--- a/setup.py
++++ b/setup.py
+@@ -106,6 +106,14 @@ if not SKIP_CUDA_BUILD:
+         if bare_metal_version >= Version("12.8"):
+             supported_archs.append("120")
+ 
++    arch_override = os.getenv("MINICPM_SALA_CUDA_ARCHS")
++    if arch_override:
++        supported_archs = [
++            arch.strip().replace("sm_", "").replace("compute_", "").replace(".", "")
++            for arch in arch_override.replace(";", ",").split(",")
++            if arch.strip()
++        ]
++
+     for arch in supported_archs:
+         cc_flag.extend(["-gencode", f"arch=compute_{arch},code=sm_{arch}"])
+ 

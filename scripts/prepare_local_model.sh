@@ -10,10 +10,11 @@ SOURCE="${SOURCE:-huggingface}"
 UV_CACHE_DIR="${UV_CACHE_DIR:-/home/dataset-local/.cache/uv}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 HF_HOME="${HF_HOME:-/home/dataset-local/.cache/huggingface}"
+TMPDIR="${TMPDIR:-/home/dataset-local/tmp}"
 
-export UV_CACHE_DIR HF_ENDPOINT HF_HOME
+export UV_CACHE_DIR HF_ENDPOINT HF_HOME TMPDIR
 
-mkdir -p "$(dirname "${MODEL_DIR}")" "${UV_CACHE_DIR}" "${HF_HOME}"
+mkdir -p "$(dirname "${MODEL_DIR}")" "${UV_CACHE_DIR}" "${HF_HOME}" "${TMPDIR}"
 
 if [ -d "${MODEL_DIR}" ] && [ -f "${MODEL_DIR}/config.json" ]; then
   echo "Model already exists: ${MODEL_DIR}"
@@ -38,7 +39,14 @@ PY
 import importlib.util
 raise SystemExit(0 if importlib.util.find_spec("huggingface_hub") else 1)
 PY
-    huggingface-cli download OpenBMB/MiniCPM-SALA --local-dir "${MODEL_DIR}"
+    if command -v hf >/dev/null 2>&1; then
+      hf download OpenBMB/MiniCPM-SALA --local-dir "${MODEL_DIR}"
+    elif command -v huggingface-cli >/dev/null 2>&1; then
+      huggingface-cli download OpenBMB/MiniCPM-SALA --local-dir "${MODEL_DIR}"
+    else
+      echo "Neither hf nor huggingface-cli was found in PATH." >&2
+      exit 1
+    fi
     ;;
   *)
     echo "Unknown SOURCE=${SOURCE}; use modelscope or huggingface." >&2

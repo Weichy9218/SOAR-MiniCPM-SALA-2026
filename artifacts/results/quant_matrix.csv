@@ -1,4 +1,5 @@
 config_name,target_precision,quantization,kv_cache_dtype,accuracy_ori,accuracy_overall,s1_duration,s8_duration,smax_duration,gpu_memory_peak,notes
-fp16_baseline,FP16,none,default,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,pending baseline runtime
+fp16_baseline_partial_100of150,FP16,none,default,76.00,95.00,0.78,1.75,0.97,0.XXX,completed chunks only 100/150; chunk_0010 running; not final public accuracy
+fp16_baseline,FP16,none,default,0.XXX,0.XXX,0.78,1.75,0.97,0.XXX,smoke only with --disable-cuda-graph; full public accuracy pending; CUDA graph enabled crashes Smax smoke
 gptq_marlin_candidate,W4A16,gptq_marlin,auto,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,pending quantized model and accuracy eval
 gptq_marlin_fp8kv_candidate,W4A16,gptq_marlin,fp8_e5m2,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,0.XXX,pending quantized model and accuracy eval

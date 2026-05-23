@@ -10,12 +10,14 @@ UV_CACHE_DIR="${UV_CACHE_DIR:-/home/dataset-local/.cache/uv}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 HF_HOME="${HF_HOME:-/home/dataset-local/.cache/huggingface}"
 UV_LINK_MODE="${UV_LINK_MODE:-hardlink}"
+TMPDIR="${TMPDIR:-/home/dataset-local/tmp}"
+UV_TORCH_BACKEND="${UV_TORCH_BACKEND:-cu130}"
 LOCAL_CUDA_HOME="${LOCAL_CUDA_HOME:-/home/dataset-local/cuda-13.1}"
 TORCH_SPEC="${TORCH_SPEC:-torch==2.11.0}"
 TRANSFORMERS_SPEC="${TRANSFORMERS_SPEC:-transformers==5.8.1}"
 PYTHON_BIN="${PYTHON_BIN:-python}"
 
-export UV_CACHE_DIR HF_ENDPOINT HF_HOME UV_LINK_MODE
+export UV_CACHE_DIR HF_ENDPOINT HF_HOME UV_LINK_MODE TMPDIR UV_TORCH_BACKEND
 
 if [ -d "${LOCAL_CUDA_HOME}" ]; then
   export CUDA_HOME="${CUDA_HOME:-${LOCAL_CUDA_HOME}}"
@@ -24,7 +26,7 @@ if [ -d "${LOCAL_CUDA_HOME}" ]; then
   export LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH:-}"
 fi
 
-mkdir -p "${UV_CACHE_DIR}" "${HF_HOME}" "$(dirname "${VENV_DIR}")"
+mkdir -p "${UV_CACHE_DIR}" "${HF_HOME}" "${TMPDIR}" "$(dirname "${VENV_DIR}")"
 
 if [ -x "${VENV_DIR}/bin/python" ]; then
   echo "Reusing existing virtual environment: ${VENV_DIR}"
@@ -33,6 +35,7 @@ else
 fi
 
 uv pip install --python "${VENV_DIR}/bin/python" \
+  --torch-backend "${UV_TORCH_BACKEND}" \
   --index-strategy unsafe-best-match \
   "${TORCH_SPEC}" \
   "${TRANSFORMERS_SPEC}" \

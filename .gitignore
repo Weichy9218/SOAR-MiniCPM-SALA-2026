@@ -5,8 +5,11 @@
 /artifacts/logs/
 /artifacts/checkpoints/
 /artifacts/draft_heads/
+/artifacts/results/baseline_accuracy_chunks/
 *.log
 *.jsonl.tmp
+outputs/
+sglang_*_custom.jsonl
 
 # Model weights and generated quantized checkpoints must not enter git.
 *.safetensors
@@ -32,4 +35,3 @@ __pycache__/
 .env
 .venv/
 venv/
-

@@ -10,6 +10,7 @@ UV_CACHE_DIR="${UV_CACHE_DIR:-/home/dataset-local/.cache/uv}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 HF_HOME="${HF_HOME:-/home/dataset-local/.cache/huggingface}"
 LOCAL_CUDA_HOME="${LOCAL_CUDA_HOME:-/home/dataset-local/cuda-13.1}"
+TMPDIR="${TMPDIR:-/home/dataset-local/tmp}"
 
 echo "work_root=${WORK_ROOT}"
 echo "model_root=${MODEL_ROOT}"
@@ -18,6 +19,7 @@ echo "uv_cache_dir=${UV_CACHE_DIR}"
 echo "hf_endpoint=${HF_ENDPOINT}"
 echo "hf_home=${HF_HOME}"
 echo "local_cuda_home=${LOCAL_CUDA_HOME}"
+echo "tmpdir=${TMPDIR}"
 echo "cuda_home=${CUDA_HOME:-}"
 test -d "${WORK_ROOT}/repos/SOAR-Toolkit" && echo "SOAR-Toolkit=present" || echo "SOAR-Toolkit=missing"
 test -d "${WORK_ROOT}/repos/sglang/python/sglang" && echo "sglang_source=present" || echo "sglang_source=missing"
@@ -25,8 +27,8 @@ test -d "${WORK_ROOT}/repos/SpecForge/specforge" && echo "SpecForge=present" || 
 test -f "${MODEL_PATH}/config.json" && echo "model=present" || echo "model=missing"
 test -x "${LOCAL_CUDA_HOME}/bin/nvcc" && "${LOCAL_CUDA_HOME}/bin/nvcc" --version | tail -n 1 || true
 
-mkdir -p "${UV_CACHE_DIR}" "${HF_HOME}" "${MODEL_ROOT}"
-df -h "${WORK_ROOT}" "${MODEL_ROOT}" "${UV_CACHE_DIR}" 2>/dev/null || true
+mkdir -p "${UV_CACHE_DIR}" "${HF_HOME}" "${MODEL_ROOT}" "${TMPDIR}"
+df -h "${WORK_ROOT}" "${MODEL_ROOT}" "${UV_CACHE_DIR}" "${TMPDIR}" 2>/dev/null || true
 
 python --version
 python - <<'PY'
