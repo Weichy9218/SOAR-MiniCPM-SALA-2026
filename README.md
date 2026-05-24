@@ -23,6 +23,60 @@ export LOCAL_CUDA_HOME=/home/dataset-local/cuda-13.1
 
 当前执行策略是先做本地显卡 **micro goal**：验证 `torch + CUDA + tokenizer/model config` 这条最小链路，再启动 SGLang server。这样可以把问题分成两类：环境/GPU 问题和 serving/runtime 问题。
 
+## 证据等级和比赛适用性
+
+必须明确：本仓库目前的大部分实验是在本地 `/home/dataset-local` 环境、单张 A100、CUDA 13.1 本地 toolkit、Hugging Face mirror、local patched SGLang checkout 上完成的；我们本地没有官方 SOAR speed split 文件，也没有使用官方评测 GPU 资源或官方容器。因此，所有结果都要按证据等级使用，不能把本地实验直接写成官方比赛成绩。
+
+### A. 可以作为 SOAR baseline guardrail 的结论
+
+这些结论与比赛任务强相关，后续优化必须以它们为边界：
+
+- Base model、tokenizer、public eval data 没有替换；MiniCPM-SALA 路径为 `/home/dataset-local/models/MiniCPM-SALA`。
+- 官方 public correctness 数据 `SOAR-Toolkit/eval_dataset/perf_public_set.jsonl` 已跑完 `150/150`。
+- FP16 baseline public accuracy：`ori_accuracy=82.53`、`overall_accuracy=100.00`、duration `17260.25s`、total_tokens `733451`。
+- 稳定 baseline 需要默认加 `--disable-cuda-graph`；CUDA graph enabled 会在 Smax smoke 的 `minicpm_flashinfer` replay metadata 路径崩溃，典型错误是 `kv_indptr[...] should be non-negative`。
+- `scripts/run_full_accuracy_chunked.sh` 的 chunked runner 是可信的可恢复 public accuracy 跑法，适合继续复现实验。
+
+使用方式：
+
+- 这些是后续 candidate 的 correctness guardrail。
+- 任何量化、EAGLE3、CUDA graph 或 kernel 改动都必须重新经过 smoke -> 小 accuracy chunk -> full public accuracy 这条链路，不能只比较速度。
+
+### B. 对 SOAR 有参考价值但不是官方成绩的结论
+
+这些结果能指导下一步，但不能报告成官方 S1/S8/Smax 或 final leaderboard 指标：
+
+- 本地 `local_proxy_speed` 是从 public prompts 派生的 deterministic self-test，全部标记为 `official=false`。它能比较本地 candidate，但不能替代官方 speed split。
+- FP16 local proxy：S1 `136.91s`、S8 `162.14s`、Smax `224.11s`。
+- RTN-GPTQ gs1024 local proxy：S1 `141.52s`、S8 `172.86s`、Smax `238.65s`，比 FP16 慢，继续价值低。
+- RTN-GPTQ sym-gs128 local proxy：S1 `137.64s`、S8 `160.99s`、Smax `222.38s`，速度信号小且混合；10-sample public accuracy probe 跑 `20:47` 仍 `0/10` 完成，而 FP16 同 chunk 只用 `111.17s`。这说明 correctness/runtime 风险很高。
+- EAGLE3 native sparse target-verify 已经能 smoke/proxy，说明 backend wiring 有工程价值；但 synthetic 1-step 和 synthetic_probe 16-step drafts 的 S8/Smax proxy 都慢于 FP16，且输出退化，不是比赛候选。
+
+使用方式：
+
+- 可以用这些结果排除低价值方向，减少重复试错。
+- 可以复用脚本、日志格式、artifact schema 和 crash 诊断。
+- 不能把这些 proxy 数字写成官方 speed claim。
+
+### C. 只属于工程经验或负结果的结论
+
+这些结论主要用于避坑，不应当被包装成优化结果：
+
+- FP8 KV 在当前 `minicpm_flashinfer` dense-as-sparse path 上不可用：`fp8_e5m2` 卡在 FlashAttention dtype，`fp8_e4m3` 卡在 Triton `fp8e4nv`。
+- `gptq_marlin` 当前受 kernel stack 限制：sym-gs128 checkpoint metadata 可进入 Marlin path，但 `sgl_kernel==0.4.2.post2` 缺 `gptq_marlin_repack`；gs1024 group size 本身不兼容当前 Marlin 支持范围。
+- Dense fallback EAGLE3 只能证明 draft/head/serving plumbing，没有保留 baseline 的 native sparse MiniCPM target path，不能用于比赛速度判断。
+- Synthetic draft 的输出退化说明不能用“能加载 EAGLE3”替代“有效 speculative decoding”。
+
+### 当前最应该继续做什么
+
+优先级按比赛价值排序：
+
+1. 获取官方 SOAR speed split 文件，设置 `SPEED_DATA_S1`、`SPEED_DATA_S8`、`SPEED_DATA_SMAX`，在稳定 FP16 baseline 上跑 official speed。
+2. 保持 FP16 baseline 为当前可交付方案；提交前不要混入 synthetic EAGLE3、RTN-GPTQ 或 FP8 KV。
+3. 若继续优化 EAGLE3，先训练非 synthetic draft，再按 native sparse smoke -> 小 public accuracy chunk -> local proxy -> official speed 的顺序推进。
+4. 若继续量化，先解决 GPTQ sym-gs128 的长生成/停止行为，再考虑 full public accuracy；Marlin 需要单独 kernel-stack 实验，不要污染当前 baseline 环境。
+5. CUDA graph 可以作为单独分支调查，但不能和 disabled graph 的 accuracy chunks 混在一个 aggregate 里。
+
 ### CUDA 版本判断
 
 SOAR Toolkit 的提交说明没有单独写死 CUDA toolkit 版本，官方要求的核心是通过 `prepare_env.sh` 自定义环境、用 `uv pip install` 安装依赖，并最终能在评测环境中启动 MiniCPM-SALA server。

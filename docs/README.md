@@ -29,6 +29,7 @@
 
 ## Current Durable Rules
 
+- 本地实验环境不是官方 speed 资源或官方容器；除完整 public accuracy 外，所有 speed/smoke/proxy 数字都必须标注证据等级，不能直接写成官方比赛成绩。
 - FP16 baseline correctness 已完成：`completed_samples=150/150`，`ori_accuracy=82.53`，`overall_accuracy=100`。
 - full public accuracy 已有 final result；以后 partial status 只能用于运行监控，不能覆盖 final baseline。
 - 当前稳定 baseline 使用 `--disable-cuda-graph`；CUDA graph enabled path 已知会在 Smax smoke 崩溃，需要单独修复和重跑完整对照。
