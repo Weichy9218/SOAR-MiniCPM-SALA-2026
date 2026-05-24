@@ -1,0 +1,225 @@
+{
+  "status": "completed_chunks_only",
+  "completed_samples": 100,
+  "ori_accuracy": 76.0,
+  "overall_accuracy": 95.0,
+  "score_sum": 76.0,
+  "duration_sec": 4483.42,
+  "summary_total_tokens": 305720,
+  "input_tokens_scored": 4671730,
+  "output_tokens_scored": 305720,
+  "chunks": [
+    {
+      "chunk": "chunk_0000_0000_0009",
+      "samples": 10,
+      "ori_accuracy": 60.0,
+      "score_sum": 6.0,
+      "duration_sec": 663.38,
+      "summary_total_tokens": 61868,
+      "input_tokens_scored": 1463,
+      "output_tokens_scored": 61868,
+      "tasks": {
+        "mcq": {
+          "n": 10,
+          "accuracy": 60.0,
+          "input_tokens": 1463,
+          "output_tokens": 61868
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0001_0010_0019",
+      "samples": 10,
+      "ori_accuracy": 80.0,
+      "score_sum": 8.0,
+      "duration_sec": 1314.61,
+      "summary_total_tokens": 110037,
+      "input_tokens_scored": 2407,
+      "output_tokens_scored": 110037,
+      "tasks": {
+        "mcq": {
+          "n": 10,
+          "accuracy": 80.0,
+          "input_tokens": 2407,
+          "output_tokens": 110037
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0002_0020_0029",
+      "samples": 10,
+      "ori_accuracy": 40.0,
+      "score_sum": 4.0,
+      "duration_sec": 1460.15,
+      "summary_total_tokens": 112989,
+      "input_tokens_scored": 4258,
+      "output_tokens_scored": 112989,
+      "tasks": {
+        "mcq": {
+          "n": 10,
+          "accuracy": 40.0,
+          "input_tokens": 4258,
+          "output_tokens": 112989
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0003_0030_0039",
+      "samples": 10,
+      "ori_accuracy": 100.0,
+      "score_sum": 10.0,
+      "duration_sec": 111.17,
+      "summary_total_tokens": 3423,
+      "input_tokens_scored": 313342,
+      "output_tokens_scored": 3423,
+      "tasks": {
+        "niah": {
+          "n": 10,
+          "accuracy": 100.0,
+          "input_tokens": 313342,
+          "output_tokens": 3423
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0004_0040_0049",
+      "samples": 10,
+      "ori_accuracy": 100.0,
+      "score_sum": 10.0,
+      "duration_sec": 148.08,
+      "summary_total_tokens": 3703,
+      "input_tokens_scored": 634148,
+      "output_tokens_scored": 3703,
+      "tasks": {
+        "niah": {
+          "n": 10,
+          "accuracy": 100.0,
+          "input_tokens": 634148,
+          "output_tokens": 3703
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0005_0050_0059",
+      "samples": 10,
+      "ori_accuracy": 100.0,
+      "score_sum": 10.0,
+      "duration_sec": 256.79,
+      "summary_total_tokens": 3426,
+      "input_tokens_scored": 1272022,
+      "output_tokens_scored": 3426,
+      "tasks": {
+        "niah": {
+          "n": 10,
+          "accuracy": 100.0,
+          "input_tokens": 1272022,
+          "output_tokens": 3426
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0006_0060_0069",
+      "samples": 10,
+      "ori_accuracy": 50.0,
+      "score_sum": 5.0,
+      "duration_sec": 58.8,
+      "summary_total_tokens": 1022,
+      "input_tokens_scored": 287532,
+      "output_tokens_scored": 1022,
+      "tasks": {
+        "qa": {
+          "n": 10,
+          "accuracy": 50.0,
+          "input_tokens": 287532,
+          "output_tokens": 1022
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0007_0070_0079",
+      "samples": 10,
+      "ori_accuracy": 60.0,
+      "score_sum": 6.0,
+      "duration_sec": 113.62,
+      "summary_total_tokens": 1037,
+      "input_tokens_scored": 610853,
+      "output_tokens_scored": 1037,
+      "tasks": {
+        "qa": {
+          "n": 10,
+          "accuracy": 60.0,
+          "input_tokens": 610853,
+          "output_tokens": 1037
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0008_0080_0089",
+      "samples": 10,
+      "ori_accuracy": 70.0,
+      "score_sum": 7.0,
+      "duration_sec": 222.28,
+      "summary_total_tokens": 997,
+      "input_tokens_scored": 1248717,
+      "output_tokens_scored": 997,
+      "tasks": {
+        "qa": {
+          "n": 10,
+          "accuracy": 70.0,
+          "input_tokens": 1248717,
+          "output_tokens": 997
+        }
+      }
+    },
+    {
+      "chunk": "chunk_0009_0090_0099",
+      "samples": 10,
+      "ori_accuracy": 100.0,
+      "score_sum": 10.0,
+      "duration_sec": 134.54,
+      "summary_total_tokens": 7218,
+      "input_tokens_scored": 296988,
+      "output_tokens_scored": 7218,
+      "tasks": {
+        "fwe": {
+          "n": 10,
+          "accuracy": 100.0,
+          "input_tokens": 296988,
+          "output_tokens": 7218
+        }
+      }
+    }
+  ],
+  "by_task": {
+    "fwe": {
+      "n": 10,
+      "accuracy": 100.0,
+      "score_sum": 10.0,
+      "input_tokens": 296988,
+      "output_tokens": 7218
+    },
+    "mcq": {
+      "n": 30,
+      "accuracy": 60.0,
+      "score_sum": 18.0,
+      "input_tokens": 8128,
+      "output_tokens": 284894
+    },
+    "niah": {
+      "n": 30,
+      "accuracy": 100.0,
+      "score_sum": 30.0,
+      "input_tokens": 2219512,
+      "output_tokens": 10552
+    },
+    "qa": {
+      "n": 30,
+      "accuracy": 60.0,
+      "score_sum": 18.0,
+      "input_tokens": 2147102,
+      "output_tokens": 3056
+    }
+  },
+  "superseded_by": "artifacts/results/baseline_accuracy_full_chunked_summary.json",
+  "superseded_note": "Full public accuracy is complete: ori_accuracy=82.53, overall_accuracy=100.00, completed_samples=150/150."
+}

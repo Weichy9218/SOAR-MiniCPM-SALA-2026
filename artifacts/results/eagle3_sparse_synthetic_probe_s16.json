@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "scope": "smoke",
+  "official": false,
+  "expect_pass": true,
+  "mode": "minicpm_flashinfer_sparse_synthetic_probe_s16",
+  "base_url": "http://127.0.0.1:30000",
+  "model_path": "/home/dataset-local/models/MiniCPM-SALA",
+  "draft_model_path": "/home/dataset-local/work/SOAR/artifacts/draft_heads/minicpm_sala_eagle3_synthetic_probe_s16/epoch_0_step_16",
+  "models_ok": true,
+  "chat_ok": true,
+  "models_status": 200,
+  "models_elapsed_s": 0.0035,
+  "request_elapsed_s": [
+    3.9667,
+    1.2752
+  ],
+  "num_requests": 2,
+  "prediction_path": "/home/dataset-local/work/SOAR/artifacts/results/eagle3_sparse_synthetic_probe_s16_predictions.jsonl",
+  "error": null
+}

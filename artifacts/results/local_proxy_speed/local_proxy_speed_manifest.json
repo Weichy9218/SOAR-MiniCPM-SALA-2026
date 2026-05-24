@@ -1,0 +1,119 @@
+{
+  "kind": "local_proxy_speed_split",
+  "official": false,
+  "note": "Derived from public accuracy prompts for local self-test only; do not report as official SOAR speed metrics.",
+  "data_path": "/home/dataset-local/work/SOAR/repos/SOAR-Toolkit/eval_dataset/perf_public_set.jsonl",
+  "model_path": "/home/dataset-local/models/MiniCPM-SALA",
+  "min_output_tokens": 64,
+  "max_output_tokens": 256,
+  "splits": {
+    "s1": {
+      "path": "artifacts/results/local_proxy_speed/local_proxy_speed_s1.jsonl",
+      "count": 8,
+      "source_indices": [
+        0,
+        21,
+        30,
+        36,
+        75,
+        46,
+        119,
+        149
+      ],
+      "prompt_tokens": {
+        "min": 103,
+        "max": 127738,
+        "mean": 55347,
+        "p50": 62137,
+        "sum": 442776
+      },
+      "proxy_output_tokens": {
+        "min": 108,
+        "max": 256,
+        "mean": 237.5,
+        "p50": 256,
+        "sum": 1900
+      }
+    },
+    "s8": {
+      "path": "artifacts/results/local_proxy_speed/local_proxy_speed_s8.jsonl",
+      "count": 16,
+      "source_indices": [
+        0,
+        10,
+        20,
+        60,
+        65,
+        68,
+        99,
+        100,
+        107,
+        78,
+        136,
+        49,
+        117,
+        88,
+        142,
+        149
+      ],
+      "prompt_tokens": {
+        "min": 103,
+        "max": 127738,
+        "mean": 57765.06,
+        "p50": 57712,
+        "sum": 924241
+      },
+      "proxy_output_tokens": {
+        "min": 71,
+        "max": 256,
+        "mean": 206.75,
+        "p50": 256,
+        "sum": 3308
+      }
+    },
+    "smax": {
+      "path": "artifacts/results/local_proxy_speed/local_proxy_speed_smax.jsonl",
+      "count": 24,
+      "source_indices": [
+        0,
+        1,
+        6,
+        12,
+        13,
+        17,
+        19,
+        22,
+        23,
+        24,
+        26,
+        62,
+        94,
+        96,
+        143,
+        89,
+        144,
+        145,
+        58,
+        146,
+        147,
+        148,
+        59,
+        149
+      ],
+      "prompt_tokens": {
+        "min": 103,
+        "max": 127738,
+        "mean": 56903.88,
+        "p50": 28977,
+        "sum": 1365693
+      },
+      "proxy_output_tokens": {
+        "min": 103,
+        "max": 256,
+        "mean": 241.71,
+        "p50": 256,
+        "sum": 5801
+      }
+    }
+  }
+}

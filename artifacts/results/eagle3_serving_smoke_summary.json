@@ -1,0 +1,74 @@
+{
+  "status": "draft_trained_dense_and_native_sparse_smoke_passed",
+  "official": false,
+  "draft_model_path": "/home/dataset-local/work/SOAR/artifacts/draft_heads/minicpm_sala_eagle3_smoke/epoch_0_step_1",
+  "draft_training": {
+    "script": "scripts/run_eagle3_smoke_train.sh",
+    "backend": "sglang",
+    "max_num_steps": 1,
+    "data_scope": "synthetic_smoke"
+  },
+  "serving_modes": [
+    {
+      "mode": "force_dense_minicpm_flashinfer_dense_as_sparse",
+      "attention_backend": "flashinfer",
+      "force_dense_minicpm": true,
+      "dense_as_sparse": true,
+      "models_ok": true,
+      "chat_ok": true,
+      "summary_path": "artifacts/results/eagle3_default_serving_smoke.json",
+      "prediction_path": "artifacts/results/eagle3_default_serving_smoke_predictions.jsonl",
+      "server_log": "artifacts/logs/eagle3_force_dense_flashinfer_dense_as_sparse/eagle3_server.log"
+    },
+    {
+      "mode": "minicpm_flashinfer_default",
+      "attention_backend": "minicpm_flashinfer",
+      "force_dense_minicpm": false,
+      "dense_as_sparse": true,
+      "models_ok": true,
+      "chat_ok": false,
+      "error": "MiniCPM backend does not support speculative decoding (target verify)",
+      "summary_path": "artifacts/results/eagle3_serving_smoke_default_minicpm_flashinfer.json",
+      "server_log": "artifacts/logs/eagle3_default_minicpm_flashinfer/eagle3_server.log"
+    },
+    {
+      "mode": "minicpm_flashinfer_sparse_after_target_verify_len_patch",
+      "attention_backend": "minicpm_flashinfer",
+      "force_dense_minicpm": false,
+      "dense_as_sparse": true,
+      "models_ok": true,
+      "chat_ok": true,
+      "official": false,
+      "summary_path": "artifacts/results/eagle3_sparse_after_target_verify_len_patch.json",
+      "prediction_path": "artifacts/results/eagle3_sparse_after_target_verify_len_patch_predictions.jsonl",
+      "local_proxy_speed_path": "artifacts/results/eagle3_sparse_synthetic_local_proxy_speed.json",
+      "local_proxy_speed": {
+        "S1": 124.42,
+        "S8": 171.2,
+        "Smax": 242.06
+      },
+      "note": "Synthetic 1-step draft; native sparse smoke/proxy only, not a candidate metric."
+    },
+    {
+      "mode": "minicpm_flashinfer_sparse_synthetic_probe_s16",
+      "attention_backend": "minicpm_flashinfer",
+      "force_dense_minicpm": false,
+      "dense_as_sparse": true,
+      "models_ok": true,
+      "chat_ok": true,
+      "official": false,
+      "draft_model_path": "/home/dataset-local/work/SOAR/artifacts/draft_heads/minicpm_sala_eagle3_synthetic_probe_s16/epoch_0_step_16",
+      "summary_path": "artifacts/results/eagle3_sparse_synthetic_probe_s16.json",
+      "prediction_path": "artifacts/results/eagle3_sparse_synthetic_probe_s16_predictions.jsonl",
+      "training_summary_path": "artifacts/results/eagle3_synthetic_probe_s16_summary.json",
+      "local_proxy_speed_path": "artifacts/results/eagle3_sparse_synthetic_probe_s16_local_proxy_speed.json",
+      "local_proxy_speed": {
+        "S1": 134.69,
+        "S8": 170.99,
+        "Smax": 240.81
+      },
+      "note": "Synthetic 128-record 16-step probe draft; smoke passed, but predictions are degenerate and S8/Smax remain slower than FP16 proxy."
+    }
+  ],
+  "boundary": "Smoke/proxy only. Do not report as official speed or public/private accuracy. Train a non-synthetic draft before EAGLE3 candidate evaluation."
+}

@@ -34,6 +34,7 @@ def quantize_weight_rtn(
     weight: torch.Tensor,
     bits: int = 4,
     group_size: int = 128,
+    sym: bool = False,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     out_features, in_features = weight.shape
     pack_factor = 32 // bits
@@ -50,11 +51,15 @@ def quantize_weight_rtn(
 
     w = weight.float()
     w_grouped = w.reshape(out_features, num_groups, group_size)
-    w_min = w_grouped.min(dim=2, keepdim=True).values
-    w_max = w_grouped.max(dim=2, keepdim=True).values
-
-    scales = (w_max - w_min).clamp(min=1e-10) / maxq
-    zeros = -w_min / scales
+    if sym:
+        max_abs = w_grouped.abs().amax(dim=2, keepdim=True)
+        scales = max_abs.clamp(min=1e-10) / (2 ** (bits - 1) - 1)
+        zeros = torch.full_like(scales, 2 ** (bits - 1))
+    else:
+        w_min = w_grouped.min(dim=2, keepdim=True).values
+        w_max = w_grouped.max(dim=2, keepdim=True).values
+        scales = (w_max - w_min).clamp(min=1e-10) / maxq
+        zeros = -w_min / scales
 
     qw = torch.clamp(torch.round(w_grouped / scales + zeros), 0, maxq).to(torch.int32)
     qw = qw.reshape(out_features, in_features)
@@ -88,6 +93,11 @@ def main() -> None:
     parser.add_argument("--output", required=True, help="Quantized model output directory")
     parser.add_argument("--group-size", type=int, default=128)
     parser.add_argument("--bits", type=int, default=4)
+    parser.add_argument(
+        "--sym",
+        action="store_true",
+        help="Write a symmetric GPTQ config; useful for GPTQ-Marlin probes.",
+    )
     args = parser.parse_args()
 
     src = Path(args.input)
@@ -103,7 +113,7 @@ def main() -> None:
         "group_size": args.group_size,
         "quant_method": "gptq",
         "desc_act": False,
-        "sym": False,
+        "sym": args.sym,
     }
     config["torch_dtype"] = "float16"
     with open(dst / "config.json", "w", encoding="utf-8") as handle:
@@ -115,7 +125,7 @@ def main() -> None:
                 "bits": args.bits,
                 "group_size": args.group_size,
                 "desc_act": False,
-                "sym": False,
+                "sym": args.sym,
                 "lm_head": False,
                 "dynamic": {},
             },
@@ -145,6 +155,7 @@ def main() -> None:
                     tensor.to(torch.float16),
                     bits=args.bits,
                     group_size=args.group_size,
+                    sym=args.sym,
                 )
                 base = name.removesuffix(".weight")
                 for suffix, value in (
@@ -167,7 +178,7 @@ def main() -> None:
 
     print(
         f"[quantize] Done: {total_quantized} linear weights -> W{args.bits}A16 "
-        f"(group_size={args.group_size})"
+        f"(group_size={args.group_size}, sym={args.sym})"
     )
 
 

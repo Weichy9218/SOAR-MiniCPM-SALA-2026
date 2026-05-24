@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "scope": "smoke",
+  "official": false,
+  "expect_pass": true,
+  "mode": "minicpm_flashinfer_sparse_after_target_verify_len_patch",
+  "base_url": "http://127.0.0.1:30000",
+  "model_path": "/home/dataset-local/models/MiniCPM-SALA",
+  "draft_model_path": "/home/dataset-local/work/SOAR/artifacts/draft_heads/minicpm_sala_eagle3_smoke/epoch_0_step_1",
+  "models_ok": true,
+  "chat_ok": true,
+  "models_status": 200,
+  "models_elapsed_s": 0.0042,
+  "request_elapsed_s": [
+    3.0652,
+    1.4538
+  ],
+  "num_requests": 2,
+  "prediction_path": "/home/dataset-local/work/SOAR/artifacts/results/eagle3_sparse_after_target_verify_len_patch_predictions.jsonl",
+  "error": null
+}

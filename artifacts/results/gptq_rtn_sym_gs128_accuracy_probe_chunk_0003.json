@@ -1,0 +1,30 @@
+{
+  "run_name": "gptq_rtn_sym_gs128_accuracy_probe_chunk_0003",
+  "status": "stopped_no_completions",
+  "official": false,
+  "scope": "public accuracy chunk probe",
+  "model_path": "/home/dataset-local/models/MiniCPM-SALA-GPTQ-RTN-sym-gs128",
+  "data_path": "artifacts/results/baseline_accuracy_chunks/data/chunk_0003_0030_0039.jsonl",
+  "num_samples": 10,
+  "completed_samples": 0,
+  "concurrency": 4,
+  "probe_elapsed_observed_s": 1247,
+  "baseline_chunk": {
+    "run": "baseline_fp16",
+    "ori_accuracy": 100.0,
+    "duration_s": 111.1713,
+    "total_tokens": 3423
+  },
+  "server_decode_observation": {
+    "first_decode_timestamp": "2026-05-24 19:37:08",
+    "first_full_token": 133232,
+    "last_decode_timestamp": "2026-05-24 19:57:35",
+    "last_full_token": 267612,
+    "running_requests": 4
+  },
+  "logs": {
+    "eval_log": "artifacts/logs/gptq_rtn_sym_gs128_accuracy_probe_chunk_0003.log",
+    "server_log": "artifacts/logs/gptq_rtn_sym_gs128_accuracy_probe_server/quant_gptq_auto.log"
+  },
+  "conclusion": "The ordinary GPTQ symmetric gs128 checkpoint had mixed local proxy speed, but this 10-sample correctness probe made no progress after 20:47 and kept decoding four requests. Do not run full public accuracy unless generation behavior is fixed or a stronger speed rationale appears."
+}

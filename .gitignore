@@ -8,6 +8,7 @@
 /artifacts/results/baseline_accuracy_chunks/
 *.log
 *.jsonl.tmp
+/artifacts/results/**/*.jsonl
 outputs/
 sglang_*_custom.jsonl
 

@@ -1,0 +1,7 @@
+status=complete
+completed_samples=150/150
+ori_accuracy=82.53
+overall_accuracy=100
+duration=17260.25
+total_tokens=733451
+run_dir=/home/dataset-local/work/SOAR/artifacts/results/baseline_accuracy_chunks

@@ -1,0 +1,17 @@
+{
+  "status": "trained",
+  "draft_model_path": "/home/dataset-local/work/SOAR/artifacts/draft_heads/minicpm_sala_eagle3_synthetic_probe_s16/epoch_0_step_16",
+  "draft_config": "/home/dataset-local/work/SOAR/artifacts/draft_heads/eagle3_probe_assets/minicpm_sala_eagle3_smoke_config.json",
+  "train_data": "/home/dataset-local/work/SOAR/artifacts/draft_heads/eagle3_probe_assets/minicpm_sala_eagle3_synthetic_probe_train.jsonl",
+  "target_model": "/home/dataset-local/models/MiniCPM-SALA",
+  "backend": "sglang",
+  "max_num_steps": "16",
+  "max_length": "512",
+  "batch_size": "1",
+  "ttt_length": "1",
+  "draft_vocab_size": "4096",
+  "dataset_mode": "synthetic_probe",
+  "num_records": "128",
+  "seed": "7",
+  "log": "/home/dataset-local/work/SOAR/artifacts/logs/eagle3_synthetic_probe_s16_train/eagle3_smoke_train.log"
+}

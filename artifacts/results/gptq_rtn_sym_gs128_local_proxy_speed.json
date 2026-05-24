@@ -1,0 +1,11 @@
+{
+  "run_name": "gptq_rtn_sym_gs128",
+  "official": false,
+  "note": "Local proxy speed split only; not official SOAR speed data.",
+  "speed_proxy_dir": "/home/dataset-local/work/SOAR/artifacts/results/local_proxy_speed",
+  "bench_result": {
+    "S1": 137.64,
+    "S8": 160.99,
+    "Smax": 222.38
+  }
+}

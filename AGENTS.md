@@ -17,7 +17,7 @@
 - GPU：NVIDIA A100-SXM4-80GB * 1。
 - 当前 `nvidia-smi` 驱动 runtime 显示 CUDA 13.0。
 - 本地 CUDA toolkit 优先使用 `/home/dataset-local/cuda-13.1`，但提交脚本不能强依赖这个路径。
-- `/home/dataset-local` 当前是主要可用盘，总量约 50 GB；空间紧张时先运行 `df -h /home/dataset-local`。
+- `/home/dataset-local` 当前是主要可用盘，总量约 1000 GB；空间紧张或大下载前仍先运行 `df -h /home/dataset-local`。
 
 ## 路径约定
 
@@ -118,4 +118,3 @@ bash scripts/run_baseline_smoke.sh
   - `artifacts/results/quant_matrix.csv`
   - `artifacts/results/ablation_matrix.csv`
   - `submit/README_SOAR.md`
-

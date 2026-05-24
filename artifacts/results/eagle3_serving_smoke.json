@@ -1,0 +1,42 @@
+{
+  "mode": "force_dense_minicpm_flashinfer_dense_as_sparse",
+  "draft_model_path": "/home/dataset-local/work/SOAR/artifacts/draft_heads/minicpm_sala_eagle3_smoke/epoch_0_step_1",
+  "model_path": "/home/dataset-local/models/MiniCPM-SALA",
+  "models_ok": true,
+  "chat_ok": true,
+  "elapsed_sec": 0.3422836437821388,
+  "response": {
+    "id": "23d892919a154b1db15fdc5ba15924af",
+    "object": "chat.completion",
+    "created": 1779603231,
+    "model": "/home/dataset-local/models/MiniCPM-SALA",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "<think> \nOkayah med\n",
+          "reasoning_content": null,
+          "tool_calls": null
+        },
+        "logprobs": null,
+        "finish_reason": "length",
+        "matched_stop": null
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 15,
+      "total_tokens": 23,
+      "completion_tokens": 8,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  },
+  "error": null,
+  "models_status": 200,
+  "models_body_prefix": "{\"object\":\"list\",\"data\":[{\"id\":\"/home/dataset-local/models/MiniCPM-SALA\",\"object\":\"model\",\"created\":1779603231,\"owned_by\":\"sglang\",\"root\":\"/home/dataset-local/models/MiniCPM-SALA\",\"parent\":null,\"max_model_len\":524288}]}",
+  "chat_status": 200
+}

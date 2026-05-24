@@ -1,0 +1,11 @@
+{
+  "run_name": "eagle3_sparse_synthetic_probe_s16",
+  "official": false,
+  "note": "Local proxy speed split only; not official SOAR speed data.",
+  "speed_proxy_dir": "/home/dataset-local/work/SOAR/artifacts/results/local_proxy_speed",
+  "bench_result": {
+    "S1": 134.69,
+    "S8": 170.99,
+    "Smax": 240.81
+  }
+}
